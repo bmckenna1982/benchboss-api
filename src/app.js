@@ -24,8 +24,10 @@ app.get('/', (req, res) => {
   // res.json({ok: true})
 })
 
-app.get('/schedule', (req, res ) => {
-  console.log('The schedule path was called')
+app.get('/schedule', (req, res) => {
+  // const { search = ""} = req.query;
+
+  // let results = schedule.filter(game => game.)
   res.json(schedule)
 })
 
