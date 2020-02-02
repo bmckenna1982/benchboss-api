@@ -148,10 +148,6 @@ app.post('/message-board/:messageId', (req, res) => {
 })
 
 
-
-
-
-
 app.use(function errorHandler(error, req, res, next) {
   let response
   if (process.env.NODE_ENV === 'production') {
