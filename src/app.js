@@ -27,6 +27,7 @@ app.use(function validateBearerToken(req, res, next) {
 
   if (!authToken || authToken.split(' ')[1] !== apiToken) {    
     console.log('authToken', authToken)
+    console.log('apiToken', apiToken)
     return res.status(401).json({ error: 'Unauthorized request' })
   }
   // move to the next middleware
@@ -144,6 +145,36 @@ app.post('/message-board/:messageId', (req, res) => {
     .status(201)
     .location(`https://localhost:8000/message-board/${messageId}/comments`)
     .json(comment)
+
+})
+
+app.post('/schedule', (req, res) => {
+  const { opponent, status, location, time } = req.body
+  
+  if(!opponent || !status || !location || !time) {
+    return res.status(400).send('Invalid data')
+  }
+
+  const summary = (status === 'home')
+    ? `${opponent} at Guinness`
+    : `Guinness at ${opponent}`
+
+  const id = uuid()
+
+  const game = {
+    id,    
+    summary,
+    location,    
+    time,
+  }
+
+  console.log(game)
+  schedule.push(game)
+
+  res
+    .status(201)
+    .location(`https://localhost:8000/schedule/${id}`)
+    .json(game)
 
 })
 
