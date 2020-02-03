@@ -1,6 +1,6 @@
 const app = require('../src/app')
 
-describe.only('Schedule endpoints', () => {
+describe('Schedule endpoints', () => {
 
   describe('GET /schedule', () => {
 
