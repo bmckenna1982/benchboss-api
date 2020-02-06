@@ -1,14 +1,18 @@
-require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
-const uuid = require('uuid/v4')
+
 const { NODE_ENV } = require('./config')
 
-const schedule = require('./schedule-data')
-const messages = require('./message-data')
-const comments = require('./comment-data')
+const scheduleRouter = require('./schedule/schedule-router')
+const messageRouter = require('./message/message-router')
+const commentRouter = require('./comment/comment-router')
+const userRouter = require('./user/user-router')
+
+// const schedule = require('./schedule-data')
+// const messages = require('./message-data')
+// const comments = require('./comment-data')
 
 const app = express()
 
@@ -25,7 +29,7 @@ app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN
   const authToken = req.get('Authorization')
 
-  if (!authToken || authToken.split(' ')[1] !== apiToken) {    
+  if (!authToken || authToken.split(' ')[1] !== apiToken) {
     console.log('authToken', authToken)
     console.log('apiToken', apiToken)
     return res.status(401).json({ error: 'Unauthorized request' })
@@ -36,147 +40,180 @@ app.use(function validateBearerToken(req, res, next) {
 
 app.get('/', (req, res) => {
   // res.send('Hello, world!')
-  res.json({ok: true})
+  res.json({ ok: true })
 })
 
-app.get('/schedule', (req, res) => {
-  // const { search = ""} = req.query;
 
-  // let results = schedule.filter(game => game.)
-  res.json(schedule)
-})
+app.use('/api/schedule', scheduleRouter)
+app.use('/api/message-board', messageRouter)
+app.use('/api/comments', commentRouter)
+app.use('/api/users', userRouter)
 
-app.get('/schedule/:gameId', (req, res) => {
-  const { gameId } = req.params
-  const game = schedule.find(g => g.id == gameId)
+// app.get('/schedule', (req, res) => {
+//   // const { search = ""} = req.query;
 
-  if(!game) {
-    return res.status(404).send('Game not found')
-  }
-  
-  res.json(game)
-})
+//   // let results = schedule.filter(game => game.)
+//   res.json(schedule)
+// })
 
-app.get('/message-board', (req, res) => {
-  // const { search = ""} = req.query;
+// app.get('/schedule/:gameId', (req, res) => {
+//   const { gameId } = req.params
+//   const game = schedule.find(g => g.id == gameId)
 
-  // let results = schedule.filter(game => game.)
-  res.json(messages)
-})
+//   if (!game) {
+//     return res.status(404).send('Game not found')
+//   }
 
-app.get('/message-board/:messageId', (req, res) => {
-  const { messageId } = req.params
-  const message = messages.find(m => m.id == messageId)
+//   res.json(game)
+// })
 
-  if(!message) {
-    return res.status(404).send('Message not found')
-  }
-  
-  //*** Get comments here as well?? */
-  res.json(message)
-})
+// app.get('/message-board', (req, res) => {
+//   // const { search = ""} = req.query;
 
-app.get('/message-board/:messageId/comments', (req, res) => {
-  const { messageId } = req.params;
-  console.log('messageId', messageId)
-  const commentsArray = comments.filter(c => c.messageId == messageId)
-  console.log('commentsArray', commentsArray)
-  res.json(commentsArray)
-})
+//   // let results = schedule.filter(game => game.)
+//   res.json(messages)
+// })
 
-app.post('/message-board', (req, res) => {
-  const { title, content } = req.body
-  console.log('req.body', req.body)
-  if(!title) {
-    return res.status(400).send('Invalid data')
-  }
-  if(!content) {
-    return res.status(400).send('Invalid data')
-  }
+// app.get('/message-board/:messageId', (req, res) => {
+//   const { messageId } = req.params
+//   const message = messages.find(m => m.id == messageId)
 
-  const id = uuid()
-  const postedDate = new Date();
-  const author = "api author"
-  console.log('postedDate', postedDate)
+//   if (!message) {
+//     return res.status(404).send('Message not found')
+//   }
 
-  const message = {
-    id,
-    title,
-    content,
-    author,    
-    postedDate
-  }
+//   //*** Get comments here as well?? */
+//   res.json(message)
+// })
 
-  messages.push(message)
+// app.get('/message-board/:messageId/comments', (req, res) => {
+//   const { messageId } = req.params;
+//   console.log('messageId', messageId)
+//   const commentsArray = comments.filter(c => c.messageId == messageId)
+//   console.log('commentsArray', commentsArray)
+//   res.json(commentsArray)
+// })
 
-  res
-    .status(201)
-    .location(`https://localhost:8000/message-board/${id}`)
-    .json(message)
+// app.post('/message-board', (req, res) => {
+//   const { title, content } = req.body
+//   console.log('req.body', req.body)
+//   if (!title) {
+//     return res.status(400).send('Invalid data')
+//   }
+//   if (!content) {
+//     return res.status(400).send('Invalid data')
+//   }
 
-})
+//   const id = uuid()
+//   const postedDate = new Date();
+//   const author = "api author"
+//   console.log('postedDate', postedDate)
 
-app.post('/message-board/:messageId', (req, res) => {
-  const { content } = req.body
-  const { messageId } = req.params
+//   const message = {
+//     id,
+//     title,
+//     content,
+//     author,
+//     postedDate
+//   }
 
-  console.log('messageId', messageId)
-  
-  if(!content) {
-    return res.status(400).send('Invalid data')
-  }
+//   messages.push(message)
 
-  const id = uuid()
-  const postedDate = new Date();
-  const author = "api author"
-  console.log('postedDate', postedDate)
+//   res
+//     .status(201)
+//     .location(`https://localhost:8000/message-board/${id}`)
+//     .json(message)
 
-  const comment = {
-    id,    
-    content,
-    author,    
-    postedDate, 
-    messageId,
-  }
+// })
 
-  comments.push(comment)
+// app.post('/message-board/:messageId/comments', (req, res) => {
+//   const { content } = req.body
+//   const { messageId } = req.params
 
-  res
-    .status(201)
-    .location(`https://localhost:8000/message-board/${messageId}/comments`)
-    .json(comment)
+//   console.log('messageId', messageId)
 
-})
+//   if (!content) {
+//     return res.status(400).send('Invalid data')
+//   }
 
-app.post('/schedule', (req, res) => {
-  const { opponent, status, location, time } = req.body
-  
-  if(!opponent || !status || !location || !time) {
-    return res.status(400).send('Invalid data')
-  }
+//   const id = uuid()
+//   const postedDate = new Date();
+//   const author = "api author"
+//   console.log('postedDate', postedDate)
 
-  const summary = (status === 'home')
-    ? `${opponent} at Guinness`
-    : `Guinness at ${opponent}`
+//   const comment = {
+//     id,
+//     content,
+//     author,
+//     postedDate,
+//     messageId,
+//   }
 
-  const id = uuid()
+//   comments.push(comment)
 
-  const game = {
-    id,    
-    summary,
-    location,    
-    time,
-  }
+//   res
+//     .status(201)
+//     .location(`https://localhost:8000/message-board/${messageId}/comments/${id}`)
+//     .json(comment)
 
-  console.log(game)
-  schedule.push(game)
+// })
 
-  res
-    .status(201)
-    .location(`https://localhost:8000/schedule/${id}`)
-    .json(game)
+// app.post('/schedule', (req, res) => {
+//   const { opponent, status, location, time } = req.body
 
-})
+//   if (!opponent || !status || !location || !time) {
+//     return res.status(400).send('Invalid data')
+//   }
+
+//   const summary = (status === 'home')
+//     ? `${opponent} at Guinness`
+//     : `Guinness at ${opponent}`
+
+//   const id = uuid()
+
+//   const game = {
+//     id,
+//     summary,
+//     location,
+//     time,
+//   }
+
+//   console.log(game)
+//   schedule.push(game)
+
+//   res
+//     .status(201)
+//     .location(`https://localhost:8000/schedule/${id}`)
+//     .json(game)
+
+// })
+
+// app.delete('/message-board/:messageId/comments/:commentId', () => {
+//   const { commentId } = req.params
+//   const index = comments.findIndex(c => c.id === commentId)
+
+//   if (index === -1) {
+//     return res.status(404).send('Comment not found')
+//   }
+
+//   comments.splice(index, 1)
+
+//   logger.info(`Comment with id ${commentId} deleted.`);
+//   res.send('Deleted')
+// })
+
+// app.delete('/message-board/:messageId', () => {
+//   const { messageId } = req.params
+//   const index = messages.findIndex(m => m.id === messageId)
+
+//   if (index === -1) {
+//     return res.status(404).send('Message not found')
+//   }
+
+//   messages.splice(index, 1)
+//   logger.info(`Message with id ${messageId} deleted.`);
+//   res.send('Deleted')
+// })
 
 
 app.use(function errorHandler(error, req, res, next) {
