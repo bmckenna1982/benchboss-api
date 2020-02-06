@@ -7,9 +7,8 @@ const MessageService = {
       .select(
         'mess.id',
         'mess.title',
-        'mess.date_created',
-        'mess.style',
         'mess.content',
+        'mess.posted_date',
         db.raw(
           `count(DISTINCT comm) AS number_of_comments`
         ),
@@ -19,7 +18,6 @@ const MessageService = {
               'id', usr.id,
               'user_name', usr.user_name,
               'full_name', usr.full_name,
-              'nickname', usr.nickname,
               'date_created', usr.date_created,
               'date_modified', usr.date_modified
             )
@@ -27,12 +25,12 @@ const MessageService = {
         ),
       )
       .leftJoin(
-        'blogful_comments AS comm',
+        'comment AS comm',
         'mess.id',
-        'comm.article_id',
+        'comm.message_id',
       )
       .leftJoin(
-        'blogful_users AS usr',
+        'benchboss_user AS usr',
         'mess.author_id',
         'usr.id',
       )
@@ -50,8 +48,8 @@ const MessageService = {
       .from('comment AS comm')
       .select(
         'comm.id',
-        'comm.text',
-        'comm.date_created',
+        'comm.content',
+        'comm.posted_date',
         db.raw(
           `json_strip_nulls(
             row_to_json(
@@ -59,25 +57,22 @@ const MessageService = {
                 SELECT
                   usr.id,
                   usr.user_name,
-                  usr.full_name,
-                  usr.nickname,
-                  usr.date_created,
-                  usr.date_modified
+                  usr.full_name                  
               ) tmp)
             )
-          ) AS "user"`
+          ) AS "author"`
         )
       )
-      .where('comm.article_id', messageId)
+      .where('comm.message_id', messageId)
       .leftJoin(
-        'blogful_users AS usr',
-        'comm.user_id',
+        'benchboss_user AS usr',
+        'comm.author_id',
         'usr.id',
       )
       .groupBy('comm.id', 'usr.id')
   },
 
-  serializeArticle(message) {
+  serializeMessage(message) {
     const { author } = message
     return {
       id: message.id,
@@ -87,31 +82,31 @@ const MessageService = {
         id: author.id,
         user_name: author.user_name,
         full_name: author.full_name,
-        nickname: author.nickname,
         date_created: new Date(author.date_created),
         date_modified: new Date(author.date_modified) || null
       },      
-      postedDate: new Date(message.postedDate),
+      posted_date: new Date(message.posted_date),
       number_of_comments: Number(message.number_of_comments) || 0,
       
     }
   },
 
-  serializeArticleComment(comment) {
+  serializeMessageComment(comment) {
     const { user } = comment
     return {
       id: comment.id,
-      article_id: comment.article_id,
-      text: xss(comment.text),
-      date_created: new Date(comment.date_created),
+      message_id: comment.message_id,
+      content: xss(comment.content),
+      posted_date: new Date(comment.posted_date),
       user: {
         id: user.id,
         user_name: user.user_name,
         full_name: user.full_name,
-        nickname: user.nickname,
         date_created: new Date(user.date_created),
         date_modified: new Date(user.date_modified) || null
       },
     }
   },
 }
+
+module.exports = MessageService

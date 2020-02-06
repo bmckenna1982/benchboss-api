@@ -1,4 +1,3 @@
-require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -9,6 +8,7 @@ const { NODE_ENV } = require('./config')
 const scheduleRouter = require('./schedule/schedule-router')
 const messageRouter = require('./message/message-router')
 const commentRouter = require('./comment/comment-router')
+const userRouter = require('./user/user-router')
 
 // const schedule = require('./schedule-data')
 // const messages = require('./message-data')
@@ -44,9 +44,10 @@ app.get('/', (req, res) => {
 })
 
 
-app.use(scheduleRouter)
-app.use(messageRouter)
-app.use(commentRouter)
+app.use('/api/schedule', scheduleRouter)
+app.use('/api/message-board', messageRouter)
+app.use('/api/comments', commentRouter)
+app.use('/api/users', userRouter)
 
 // app.get('/schedule', (req, res) => {
 //   // const { search = ""} = req.query;

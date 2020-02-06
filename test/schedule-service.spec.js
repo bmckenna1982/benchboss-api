@@ -1,4 +1,4 @@
-const ScheduleServices = require('../src/schedule/schedule-services')
+const ScheduleService = require('../src/schedule/schedule-services')
 const knex = require('knex')
 
 describe(`Schedule service object`, () => {
@@ -24,12 +24,11 @@ describe(`Schedule service object`, () => {
       time: new Date('2020-02-16T18:00:00.000Z')
     },
   ]
-  console.log('testSchedule[0].time', testSchedule[0].time)
 
   before(() => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: process.env.TEST_DATABASE_URL,
     })
   })
 
@@ -47,7 +46,7 @@ describe(`Schedule service object`, () => {
     })
 
     it(`getFullSchedule() resolves all games from 'schedule' table`, () => {
-      return ScheduleServices.getFullSchedule(db)
+      return ScheduleService.getFullSchedule(db)
         .then(actual => {
           expect(actual).to.eql(testSchedule.map(game => ({
             ...game,
@@ -56,24 +55,66 @@ describe(`Schedule service object`, () => {
         })
     })
 
-    it(`getById() resolves a game by id from 'schedule' table`, () =>{
+    it(`getById() resolves a game by id from 'schedule' table`, () => {
       const gameId = 3
       // const thirdTestGame = testSchedule[gameId - 1]
-      return ScheduleServices.getById(db, gameId)
-        .then(actual => { 
+      return ScheduleService.getById(db, gameId)
+        .then(actual => {
           expect(actual).to.eql(testSchedule[gameId - 1])
         })
     })
+
+    it(`deleteGame() removes a game by if from 'schedule' table`, () => {
+      const gameId = 3
+      return ScheduleService.deleteGame(db, gameId)
+        .then(() => ScheduleService.getFullSchedule(db))
+        .then(allGames => {
+          expect(allGames).to.eql(testSchedule.filter(game => game.id !== gameId))
+        })
+    })
+    it(`updateGame() updates a game from 'schedule' and resolves`, () => {
+      const idOfGameToUpdate = 3
+      const newGame = {
+        summary: 'Good guys vs Bad Guys',
+        location: 'Sandy Springs',
+        time: new Date('2020-02-04T10:00:00.000Z')
+      }
+      return ScheduleService.updateGame(db, idOfGameToUpdate, newGame)
+        .then(() => ScheduleService.getById(db, idOfGameToUpdate))
+        .then(game => {
+          expect(game).to.eql({
+            id: idOfGameToUpdate,
+            ...newGame
+          })
+        })
+    })
+
   })
 
-  context(`Given 'schedule' has data`, () => {
+  context(`Given 'schedule' has no data`, () => {
     it(`getFullSchedule() resolves an empty array`, () => {
-      return ScheduleServices.getFullSchedule(db)
+      return ScheduleService.getFullSchedule(db)
         .then(actual => {
           expect(actual).to.eql([])
         })
     })
 
+    it(`insertGame() inserts a new game and resolves the new game with an 'id'`, () => {
+      const newGame = {
+        summary: 'Good guys vs Bad Guys',
+        location: 'Sandy Springs',
+        time: new Date('2020-02-04T10:00:00.000Z')
+      }
+      return ScheduleService.insertGame(db, newGame)
+        .then(actual => {
+          expect(actual).to.eql({
+            id: 1,
+            summary: newGame.summary,
+            location: newGame.location,
+            time: new Date(newGame.time)
+          })
+        })
+    })
 
   })
 

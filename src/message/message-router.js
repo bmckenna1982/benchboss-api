@@ -1,16 +1,20 @@
 const express = require('express')
 const uuid = require('uuid/v4')
 const logger = require('../logger')
-
+const MessageService = require('./message-services')
 const messageRouter = express.Router()
 const bodyParser = express.json()
 
 const messages = require('../message-data')
 
 messageRouter
-  .route('/message-board')
-  .get((req, res) => {
-    res.json(messages)
+  .route('/')
+  .get((req, res, next) => {
+    MessageService.getAllMessages(req.app.get('db'))
+      .then(messages => 
+        res.json(messages)
+      )
+      .catch(next)
   })
   .post(bodyParser, (req, res) => {
     const { title, content } = req.body
@@ -44,17 +48,15 @@ messageRouter
   })
 
 messageRouter
-  .route('/message-board/:messageId')
+  .route('/:messageId')
   .get((req, res) => {
-    const { messageId } = req.params
-    const message = messages.find(m => m.id == messageId)
-
-    if (!message) {
-      return res.status(404).send('Message not found')
-    }
-
-    //*** Get comments here as well?? */
-    res.json(message)
+    MessageService.getById(req.app.get('db'), req.params.messageId)
+    .then(message => {
+      if (!message) {
+        return res.status(404).send('Message not found')
+      }
+      res.json(message)
+    })       
   })
   .delete((req, res) => {
     const { messageId } = req.params
@@ -68,5 +70,14 @@ messageRouter
     logger.info(`Message with id ${messageId} deleted.`);
     res.send('Deleted')
   })
+
+messageRouter
+  .route('/:messageId/comments')
+  .get((req, res, next) => {
+    MessageService.getCommentsForMessage(req.app.get('db'), req.params.messageId)
+      .then(comments => res.json(comments))
+      .catch(next)
+  })
+  
 
 module.exports = messageRouter

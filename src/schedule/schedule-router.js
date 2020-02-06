@@ -1,6 +1,7 @@
 const express = require('express')
 const uuid = require('uuid/v4')
 const logger = require('../logger')
+const ScheduleService = require('./schedule-services')
 
 const scheduleRouter = express.Router()
 const bodyParser = express.json()
@@ -8,9 +9,13 @@ const bodyParser = express.json()
 const schedule = require('../schedule-data')
 
 scheduleRouter
-  .route('/schedule')
+  .route('/')
   .get((req, res) => {
-    res.json(schedule)
+    ScheduleService.getFullSchedule(req.app.get('db'))
+      .then(games => {
+        res.json(games)
+      })
+    // res.json(schedule)
   })
   .post(bodyParser, (req, res) => {
     const { opponent, status, location, time } = req.body
@@ -23,35 +28,38 @@ scheduleRouter
       ? `${opponent} at Guinness`
       : `Guinness at ${opponent}`
 
-    const id = uuid()
+    // const id = uuid()
 
-    const game = {
-      id,
+    const newGame = {
+      // id,
       summary,
       location,
       time,
     }
 
-    console.log(game)
-    schedule.push(game)
-
-    res
-      .status(201)
-      .location(`https://localhost:8000/schedule/${id}`)
-      .json(game)
+    ScheduleService.insertGame(req.app.get('db'), newGame)
+      .then(game =>
+        res
+          .status(201)
+          .location(`https://localhost:8000/api/schedule/${game.id}`)
+          .json(game)
+      )
   })
 
 scheduleRouter
-  .route('/schedule/:gameId')
+  .route('/:gameId')
   .get((req, res) => {
-    const { gameId } = req.params
-    const game = schedule.find(g => g.id == gameId)
+    ScheduleService.getById(req.app.get('db'), req.params.gameId)
+      .then(game => {
+        console.log('game', game)
 
-    if (!game) {
-      return res.status(404).send('Game not found')
-    }
+        if (!game) {
+          return res.status(404).send('Game not found')
+        }
 
-    res.json(game)
+        res.json(game)
+      })
+
   })
 
 module.exports = scheduleRouter

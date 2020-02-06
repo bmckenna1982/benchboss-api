@@ -3,5 +3,5 @@ CREATE TABLE message (
     content TEXT NOT NULL,
     title TEXT NOT NULL,
     author TEXT NOT NULL,
-    postedDate TIMESTAMP NOT NULL
+    posted_date TIMESTAMP NOT NULL
 );
