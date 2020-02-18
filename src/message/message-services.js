@@ -72,6 +72,45 @@ const MessageService = {
       .groupBy('comm.id', 'usr.id')
   },
 
+  getLatest(db) {
+    return MessageService.getAllMessages(db)
+      .orderBy('posted_date', 'desc')
+      .limit(1)
+      .first()
+  },
+
+  getLatestComment(db, messageId) {    
+    return db
+      .from('comment AS comm')
+      .select(
+        'comm.id',
+        'comm.content',
+        'comm.posted_date',
+        db.raw(
+          `json_strip_nulls(
+            row_to_json(
+              (SELECT tmp FROM (
+                SELECT
+                  usr.id,
+                  usr.user_name,
+                  usr.full_name                  
+              ) tmp)
+            )
+          ) AS "author"`
+        )
+      )
+      .where('comm.message_id', messageId)
+      .leftJoin(
+        'benchboss_user AS usr',
+        'comm.author_id',
+        'usr.id',
+      )
+      .groupBy('comm.id', 'usr.id')
+      .orderBy('posted_date', 'desc')
+      .limit(1)
+      .first()
+  },
+
   serializeMessage(message) {
     const { author } = message
     return {

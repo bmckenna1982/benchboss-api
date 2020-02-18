@@ -1,21 +1,21 @@
 const express = require('express')
 const CommentService = require('./comment-services')
-const uuid = require('uuid/v4')
-const logger = require('../logger')
 const path = require('path')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 const commentRouter = express.Router()
 const bodyParser = express.json()
 
-const comments = require('../comment-data')
+// const comments = require('../comment-data')
 
 commentRouter
   .route('/')
-  .get((req, res) => {
+  .get((req, res, next) => {
     CommentService.getAllComments(req.app.get('db')
       .then(comments => {
         res.json(comments)
       })
+      .catch(next)
       // const { messageId } = req.params;
       // console.log('messageId', messageId)
       // const commentsArray = comments.filter(c => c.messageId == messageId)
@@ -23,7 +23,7 @@ commentRouter
       // res.json(commentsArray)
     )
   })
-  .post(bodyParser, (req, res, next) => {
+  .post(requireAuth, bodyParser, (req, res, next) => {
     const { content, message_id, author_id } = req.body
     const newComment = { content, message_id, author_id }
     // const { messageId } = req.params

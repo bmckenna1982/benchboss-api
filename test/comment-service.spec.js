@@ -44,7 +44,8 @@ describe(`Comment service object`, () => {
       }
       return supertest(app)
         .post('/api/comments')
-        // .set('Authorization', )
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        // .set('Authorization', process.env.API_TOKEN)
         .send(newComment)
         .expect(201)
         .expect(res => {
