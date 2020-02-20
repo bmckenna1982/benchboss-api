@@ -3,7 +3,7 @@ const app = require('../src/app')
 const knex = require('knex')
 const helpers = require('./test-helpers')
 
-describe(`Comment service object`, () => {
+describe.only(`Comment service object`, () => {
   let db
   
   const { testUsers, testMessages, testComments } = helpers.makeMessagesFixtures()

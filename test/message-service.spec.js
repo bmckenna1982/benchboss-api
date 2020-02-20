@@ -11,38 +11,8 @@ describe('Message service object', () => {
     testMessages,
     testComments
   } = helpers.makeMessagesFixtures()
-
-  // let author = {
-  //   date_created: "2020-02-04T17:57:57.647603",
-  //   full_name: "Brian McKenna",
-  //   id: 1,
-  //   user_name: "bmckenna1982@gmail.com"
-  // }
-
-  // let testMessageBoard = [
-  //   {
-  //     id: 1,
-  //     title: 'Test Message 1 title',
-  //     content: 'Test Message 1 content',
-  //     author_id: 1,
-  //     posted_date: new Date('2020-02-04T10:00:00.000Z')
-  //   },
-  //   {
-  //     id: 2,
-  //     title: 'Test Message 2 title',
-  //     content: 'Test Message 2 content',
-  //     author_id: 1,
-  //     posted_date: new Date('2020-03-04T10:00:00.000Z')
-  //   },
-  //   {
-  //     id: 3,
-  //     title: 'Test Message 3 title',
-  //     content: 'Test Message 3 content',
-  //     author_id: 1,
-  //     posted_date: new Date('2020-04-04T10:00:00.000Z')
-  //   },
-  // ]
-
+  const testUser = testUsers[0]
+  
   before(() => {
     db = knex({
       client: 'pg',
@@ -50,10 +20,6 @@ describe('Message service object', () => {
     })
     app.set('db', db)
   })
-
-  // before('cleanup', () => db.raw('TRUNCATE message RESTART IDENTITY CASCADE'))
-
-  // afterEach('cleanup', () => db.raw('TRUNCATE message RESTART IDENTITY CASCADE'))
 
   before('cleanup', () => helpers.cleanTables(db))
 
@@ -102,6 +68,7 @@ describe('Message service object', () => {
       const expectedMessage = helpers.makeExpectedMessage(testUsers, testMessages[messageId - 1], testComments,  )
         return supertest(app)
           .get(`/api/message-board/${messageId}`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
           .expect(200, expectedMessage)
       
       // return MessageService.getById(db, messageId)

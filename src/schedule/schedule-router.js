@@ -5,8 +5,8 @@ const ScheduleService = require('./schedule-services')
 
 const scheduleRouter = express.Router()
 const bodyParser = express.json()
-
-const schedule = require('../schedule-data')
+const { requireAuth } = require('../middleware/jwt-auth')
+// const schedule = require('../schedule-data')
 
 scheduleRouter
   .route('/')
@@ -48,6 +48,7 @@ scheduleRouter
 
 scheduleRouter
   .route('/:gameId')
+  .all(requireAuth)
   .get((req, res) => {
     ScheduleService.getById(req.app.get('db'), req.params.gameId)
       .then(game => {
@@ -62,4 +63,53 @@ scheduleRouter
 
   })
 
+  scheduleRouter
+  .route('/:gameId/rsvp')
+  .all(requireAuth)
+  // .get((req, res) => {
+    // ScheduleService.getRsvp(req.app.get('db'), req.params.gameId)
+    //   .then(game => {
+    //     console.log('game', game)
+
+    //     if (!game) {
+    //       return res.status(404).send('Rsvp not found')
+    //     }
+
+    //     res.json(game)
+    //   })
+
+  // })
+  .all(requireAuth)
+  .all((req, res, next) => {
+    ScheduleService.getRsvp(req.app.get('db'), req.params.gameId)
+      .then(allGameRsvp => {
+        console.log('allGameRsvp', allGameRsvp)
+
+        if (!allGameRsvp) {
+          return res.status(404).send('Rsvp not found')
+        }
+
+        res.allGameRsvp = allGameRsvp
+        next()
+      })
+      .catch(next)
+  })
+  .get((req, res, next) => {
+    const userId = req.user.id
+    ScheduleService.getUserRsvpByGame(req.app.get('db'), req.params.gameId, userId)
+      .then(currentUserRsvp => {
+        console.log('currentUserRsvp', currentUserRsvp)
+        // if(currentUserRsvp) {
+        //   res.json({  rsvp: {
+        //     game: res.game,
+        //     userRsvp: currentUserRsVP
+        //   }})
+        // }
+        res.json({
+          teamRsvp: res.allGameRsvp,
+          userRsvp: currentUserRsvp
+        })
+      })
+      .catch(next)
+  })
 module.exports = scheduleRouter

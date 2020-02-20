@@ -13,6 +13,7 @@ const messageRouter = require('./message/message-router')
 const commentRouter = require('./comment/comment-router')
 const userRouter = require('./user/user-router')
 const authRouter = require('./auth/auth-router')
+const rsvpRouter = require('./rsvp/rsvp-router')
 
 const app = express()
 
@@ -58,6 +59,8 @@ app.use('/api/message-board', messageRouter)
 app.use('/api/comments', commentRouter)
 app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/rsvp', rsvpRouter)
+
 
 app.use(function errorHandler(error, req, res, next) {
   let response
