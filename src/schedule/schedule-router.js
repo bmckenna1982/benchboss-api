@@ -78,8 +78,7 @@ scheduleRouter
     //     res.json(game)
     //   })
 
-  // })
-  .all(requireAuth)
+  // })  
   .all((req, res, next) => {
     ScheduleService.getRsvp(req.app.get('db'), req.params.gameId)
       .then(allGameRsvp => {

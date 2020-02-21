@@ -22,7 +22,7 @@ describe(`Rsvp Endpoints`, function () {
 
   afterEach('cleanup', () => helpers.cleanTables(db))
 
-  describe.only(`POST /api/rsvp`, () => {
+  describe(`POST /api/rsvp`, () => {
     beforeEach(() => {
       return db
         .into('schedule')
@@ -56,6 +56,50 @@ describe(`Rsvp Endpoints`, function () {
           expect(actualDate).to.eql(expectedDate)
         })
 
+    })
+  })
+  describe.only(`PATCH /api/rsvp/:rsvp_id`, () => {
+    context(`Given the rsvp exists in the database`, () => {
+      beforeEach(() => {
+        return db
+          .into('schedule')
+          .insert(testSchedule)
+      })
+      beforeEach('insert data', () =>
+        helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
+      )
+
+      it('responds with 204 and updates the rsvp', () => {
+        const idToUpdate = 1
+        const updateRsvp = {
+          game_status: 'maybe'
+        }
+
+        // const expectedRsvp = {
+        //   ...testRsvp[idToUpdate - 1],
+        //   ...updateRsvp
+        // }
+
+        const expectedRsvp = 
+          helpers.makeExpectedRsvp(
+            testUsers,          
+            testRsvp[idToUpdate - 1],
+          )
+
+        expectedRsvp.game_status = updateRsvp.game_status
+
+        return supertest(app)
+          .patch(`/api/rsvp/${idToUpdate}`)
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+          .send(updateRsvp)
+          .expect(204)
+          .then(res =>
+            supertest(app)
+              .get(`/api/rsvp/${idToUpdate}`)
+              .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
+              .expect(expectedRsvp)
+          )
+      })
     })
   })
 })

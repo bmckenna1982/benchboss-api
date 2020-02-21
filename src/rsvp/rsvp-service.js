@@ -35,6 +35,12 @@ const RsvpService = {
         RsvpService.getRsvpById(db, rsvp.id)
       )
   },
+  updateRsvp(db, id, newRsvp) {
+    return db
+      .from('rsvp')
+      .where({ id })
+      .update(newRsvp)
+  }
 }
 
 module.exports = RsvpService

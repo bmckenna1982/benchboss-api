@@ -306,7 +306,7 @@ function seedTables(db, users, messages, comments = [], rsvp = []) {
   //   .then(() =>
   //     comments.length && db.into('comment').insert(comments)
   //   )
-  console.log('users', users)
+  
   return db.transaction(async trx => {
     await seedUsers(trx, users)
     await trx.into('message').insert(messages)
@@ -314,7 +314,7 @@ function seedTables(db, users, messages, comments = [], rsvp = []) {
       `SELECT setval('message_id_seq', ?)`,
       [messages[messages.length - 1].id],
     )
-    console.log('comments', comments.length)
+    
     if (comments.length) {
       await trx.into('comment').insert(comments)
       await trx.raw(
@@ -322,7 +322,7 @@ function seedTables(db, users, messages, comments = [], rsvp = []) {
         [comments[comments.length - 1].id],
       )
     }
-    console.log('rsvp', rsvp)
+    
     if (rsvp.length) {
       await trx.into('rsvp').insert(rsvp)
       await trx.raw(
