@@ -58,7 +58,7 @@ describe(`Rsvp Endpoints`, function () {
 
     })
   })
-  describe.only(`PATCH /api/rsvp/:rsvp_id`, () => {
+  describe(`PATCH /api/rsvp/:rsvp_id`, () => {
     context(`Given the rsvp exists in the database`, () => {
       beforeEach(() => {
         return db
