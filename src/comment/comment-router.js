@@ -31,9 +31,6 @@ commentRouter
     const newComment = { content, message_id, author_id };
     console.log("req.body", req.body);
     console.log("newComment", newComment);
-    // const { messageId } = req.params
-
-    // console.log('messageId', messageId)
 
     for (const [key, value] of Object.entries(newComment))
       if (value == null)

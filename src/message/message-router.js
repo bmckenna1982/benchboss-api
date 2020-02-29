@@ -1,5 +1,5 @@
 const express = require("express");
-const uuid = require("uuid/v4");
+const path = require("path");
 const logger = require("../logger");
 const MessageService = require("./message-services");
 const messageRouter = express.Router();
@@ -18,8 +18,10 @@ messageRouter
       )
       .catch(next);
   })
-  .post(bodyParser, (req, res) => {
+  .post(requireAuth, bodyParser, (req, res, next) => {
     const { title, content } = req.body;
+    const author_id = req.user.id;
+    const newMessage = { title, content, author_id };
     // console.log('req.body', req.body)
     if (!title) {
       return res.status(400).send("Invalid data");
@@ -28,25 +30,14 @@ messageRouter
       return res.status(400).send("Invalid data");
     }
 
-    const id = uuid();
-    const postedDate = new Date();
-    const author = "api author";
-    // console.log('postedDate', postedDate)
-
-    const message = {
-      id,
-      title,
-      content,
-      author,
-      postedDate
-    };
-
-    messages.push(message);
-
-    res
-      .status(201)
-      .location(`https://localhost:8000/message-board/${id}`)
-      .json(message);
+    MessageService.insertMessage(req.app.get("db"), newMessage)
+      .then(message => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${message.id}`))
+          .json(message);
+      })
+      .catch(next);
   });
 
 messageRouter
