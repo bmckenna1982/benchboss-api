@@ -2,11 +2,11 @@ const ScheduleService = require('../src/schedule/schedule-services')
 const knex = require('knex')
 const helpers = require('./test-helpers')
 
-describe(`Schedule service object`, () => {
+describe.only(`Schedule service object`, () => {
   let db
 
   const { testUsers, testRsvp, testSchedule, testMessages, testComments } = helpers.makeMessagesFixtures()
- 
+
   before(() => {
     db = knex({
       client: 'pg',
@@ -29,8 +29,8 @@ describe(`Schedule service object`, () => {
     })
 
     beforeEach('insert data', () =>
-        helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
-      )
+      helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
+    )
 
     it(`getFullSchedule() resolves all games from 'schedule' table`, () => {
       return ScheduleService.getFullSchedule(db)
@@ -91,15 +91,15 @@ describe(`Schedule service object`, () => {
       // beforeEach('insert data', () =>
       //   helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
       // )
-      
+
       const gameId = 1
-      const expectedRsvp = testRsvp.filter(gstatus => gstatus.game_id === gameId).map(status => 
+      const expectedRsvp = testRsvp.filter(gstatus => gstatus.game_id === gameId).map(status =>
         helpers.makeExpectedRsvp(
-          testUsers,          
+          testUsers,
           status,
         ))
       return ScheduleService.getRsvp(db, gameId)
-        .then(actual => {          
+        .then(actual => {
           expect(actual).to.eql(expectedRsvp)
         })
     })

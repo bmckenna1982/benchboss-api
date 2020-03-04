@@ -80,9 +80,9 @@ describe(`Rsvp Endpoints`, function () {
         //   ...updateRsvp
         // }
 
-        const expectedRsvp = 
+        const expectedRsvp =
           helpers.makeExpectedRsvp(
-            testUsers,          
+            testUsers,
             testRsvp[idToUpdate - 1],
           )
 
@@ -92,7 +92,7 @@ describe(`Rsvp Endpoints`, function () {
           .patch(`/api/rsvp/${idToUpdate}`)
           .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .send(updateRsvp)
-          .expect(204)
+          .expect(202)
           .then(res =>
             supertest(app)
               .get(`/api/rsvp/${idToUpdate}`)

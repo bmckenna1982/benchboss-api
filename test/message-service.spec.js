@@ -12,7 +12,7 @@ describe('Message service object', () => {
     testComments
   } = helpers.makeMessagesFixtures()
   const testUser = testUsers[0]
-  
+
   before(() => {
     db = knex({
       client: 'pg',
@@ -65,12 +65,12 @@ describe('Message service object', () => {
     it(`getById() resolves a message by id from 'message' table`, () => {
       const messageId = 2
       // const testMessage = testMessageBoard[messageId - 1]
-      const expectedMessage = helpers.makeExpectedMessage(testUsers, testMessages[messageId - 1], testComments,  )
-        return supertest(app)
-          .get(`/api/message-board/${messageId}`)
-          .set('Authorization', helpers.makeAuthHeader(testUser))
-          .expect(200, expectedMessage)
-      
+      const expectedMessage = helpers.makeExpectedMessage(testUsers, testMessages[messageId - 1], testComments)
+      return supertest(app)
+        .get(`/api/message-board/${messageId}`)
+        .set('Authorization', helpers.makeAuthHeader(testUser))
+        .expect(200, expectedMessage)
+
       // return MessageService.getById(db, messageId)
       //   .then(actual => {
       //     expect(actual).to.eql({
@@ -88,11 +88,11 @@ describe('Message service object', () => {
       const messageId = 1
       const expectedComments = helpers.makeExpectedMessageComments(testUsers, messageId, testComments)
       // console.log('expectedComments', expectedComments)
-        return supertest(app)
-          .get(`/api/message-board/${messageId}/comments`)
-          .expect(200, expectedComments)
+      return supertest(app)
+        .get(`/api/message-board/${messageId}/comments`)
+        .expect(200, expectedComments)
     })
-    
+
   })
 
   context(`Given 'message' has no data`, () => {

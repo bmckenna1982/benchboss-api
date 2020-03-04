@@ -5,7 +5,7 @@ const helpers = require('./test-helpers')
 
 describe(`Comment service object`, () => {
   let db
-  
+
   const { testUsers, testMessages, testComments } = helpers.makeMessagesFixtures()
 
   before(() => {
@@ -30,10 +30,10 @@ describe(`Comment service object`, () => {
     // })
 
     beforeEach('insert data', () =>
-    helpers.seedTables(db, testUsers, testMessages, testComments)
-  )
+      helpers.seedTables(db, testUsers, testMessages, testComments)
+    )
 
-    it(`creates a comment, responding with 201 and the new comment`, function() {
+    it(`creates a comment, responding with 201 and the new comment`, function () {
       // this.retries(3)
       const testMessage = testMessages[0]
       const testUser = testUsers[0]
@@ -52,8 +52,8 @@ describe(`Comment service object`, () => {
           expect(res.body).to.have.property('id')
           expect(res.body.content).to.eql(newComment.content)
           expect(res.body.message_id).to.eql(newComment.message_id)
-          const expected_date = new Date().toLocaleString('en', {timeZone: 'UTC'})
-          const actual_date = new Date(res.body.posted_date).toLocaleString()          
+          const expected_date = new Date().toLocaleString('en', { timeZone: 'UTC' })
+          const actual_date = new Date(res.body.posted_date).toLocaleString()
           console.log('actual_date', res.body.posted_date)
           expect(actual_date).to.eql(expected_date)
           expect(res.body.author).to.eql({
@@ -64,11 +64,11 @@ describe(`Comment service object`, () => {
           expect(res.headers.location).to.eql(`/api/comments/${res.body.id}`)
 
         })
-        // .expect(res => 
-        //   db)
+      // .expect(res => 
+      //   db)
     })
-    
-  })  
+
+  })
 
 })
 
