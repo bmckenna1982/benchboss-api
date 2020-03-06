@@ -1,17 +1,15 @@
-const xss = require('xss')
+const xss = require("xss");
 
 const MessageService = {
   getAllMessages(db) {
     return db
-      .from('message as mess')
+      .from("message as mess")
       .select(
-        'mess.id',
-        'mess.title',
-        'mess.content',
-        'mess.posted_date',
-        db.raw(
-          `count(DISTINCT comm) AS number_of_comments`
-        ),
+        "mess.id",
+        "mess.title",
+        "mess.content",
+        "mess.posted_date",
+        db.raw(`count(DISTINCT comm) AS number_of_comments`),
         db.raw(
           `json_strip_nulls(
             json_build_object(
@@ -22,34 +20,26 @@ const MessageService = {
               'date_modified', usr.date_modified
             )
           ) AS "author"`
-        ),
+        )
       )
-      .leftJoin(
-        'comment AS comm',
-        'mess.id',
-        'comm.message_id',
-      )
-      .leftJoin(
-        'benchboss_user AS usr',
-        'mess.author_id',
-        'usr.id',
-      )
-      .groupBy('mess.id', 'usr.id')
+      .leftJoin("comment AS comm", "mess.id", "comm.message_id")
+      .leftJoin("benchboss_user AS usr", "mess.author_id", "usr.id")
+      .groupBy("mess.id", "usr.id");
   },
 
   getById(db, id) {
     return MessageService.getAllMessages(db)
-      .where('mess.id', id)
-      .first()
+      .where("mess.id", id)
+      .first();
   },
 
   getCommentsForMessage(db, messageId) {
     return db
-      .from('comment AS comm')
+      .from("comment AS comm")
       .select(
-        'comm.id',
-        'comm.content',
-        'comm.posted_date',
+        "comm.id",
+        "comm.content",
+        "comm.posted_date",
         db.raw(
           `json_strip_nulls(
             row_to_json(
@@ -63,29 +53,25 @@ const MessageService = {
           ) AS "author"`
         )
       )
-      .where('comm.message_id', messageId)
-      .leftJoin(
-        'benchboss_user AS usr',
-        'comm.author_id',
-        'usr.id',
-      )
-      .groupBy('comm.id', 'usr.id')
+      .where("comm.message_id", messageId)
+      .leftJoin("benchboss_user AS usr", "comm.author_id", "usr.id")
+      .groupBy("comm.id", "usr.id");
   },
 
   getLatest(db) {
     return MessageService.getAllMessages(db)
-      .orderBy('posted_date', 'desc')
+      .orderBy("posted_date", "desc")
       .limit(1)
-      .first()
+      .first();
   },
 
-  getLatestComment(db, messageId) {    
+  getLatestComment(db, messageId) {
     return db
-      .from('comment AS comm')
+      .from("comment AS comm")
       .select(
-        'comm.id',
-        'comm.content',
-        'comm.posted_date',
+        "comm.id",
+        "comm.content",
+        "comm.posted_date",
         db.raw(
           `json_strip_nulls(
             row_to_json(
@@ -99,20 +85,23 @@ const MessageService = {
           ) AS "author"`
         )
       )
-      .where('comm.message_id', messageId)
-      .leftJoin(
-        'benchboss_user AS usr',
-        'comm.author_id',
-        'usr.id',
-      )
-      .groupBy('comm.id', 'usr.id')
-      .orderBy('posted_date', 'desc')
+      .where("comm.message_id", messageId)
+      .leftJoin("benchboss_user AS usr", "comm.author_id", "usr.id")
+      .groupBy("comm.id", "usr.id")
+      .orderBy("posted_date", "desc")
       .limit(1)
-      .first()
+      .first();
   },
-
+  insertMessage(db, newMessage) {
+    return db
+      .insert(newMessage)
+      .into("message")
+      .returning("*")
+      .then(([message]) => message)
+      .then(message => MessageService.getById(db, message.id));
+  },
   serializeMessage(message) {
-    const { author } = message
+    const { author } = message;
     return {
       id: message.id,
       content: xss(message.content),
@@ -123,15 +112,14 @@ const MessageService = {
         full_name: author.full_name,
         date_created: new Date(author.date_created),
         date_modified: new Date(author.date_modified) || null
-      },      
+      },
       posted_date: new Date(message.posted_date),
-      number_of_comments: Number(message.number_of_comments) || 0,
-      
-    }
+      number_of_comments: Number(message.number_of_comments) || 0
+    };
   },
 
   serializeMessageComment(comment) {
-    const { user } = comment
+    const { user } = comment;
     return {
       id: comment.id,
       message_id: comment.message_id,
@@ -143,9 +131,9 @@ const MessageService = {
         full_name: user.full_name,
         date_created: new Date(user.date_created),
         date_modified: new Date(user.date_modified) || null
-      },
-    }
-  },
-}
+      }
+    };
+  }
+};
 
-module.exports = MessageService
+module.exports = MessageService;

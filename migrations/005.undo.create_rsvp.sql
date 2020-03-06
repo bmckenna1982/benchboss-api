@@ -1,3 +1,3 @@
-DROP TYPE IF EXISTS user_status;
-
 DROP TABLE IF EXISTS rsvp;
+
+DROP TYPE IF EXISTS user_status;

@@ -1,29 +1,11 @@
 const ScheduleService = require('../src/schedule/schedule-services')
 const knex = require('knex')
+const helpers = require('./test-helpers')
 
-describe(`Schedule service object`, () => {
+describe.only(`Schedule service object`, () => {
   let db
 
-  let testSchedule = [
-    {
-      id: 1,
-      summary: 'Test game 1 summary',
-      location: 'IceComplex',
-      time: new Date('2020-02-06T20:00:00.000Z')
-    },
-    {
-      id: 2,
-      summary: 'Test game 2 summary',
-      location: 'IceComplex',
-      time: new Date('2020-02-09T16:00:00.000Z')
-    },
-    {
-      id: 3,
-      summary: 'Test game 2 summary',
-      location: 'Sandy Springs',
-      time: new Date('2020-02-16T18:00:00.000Z')
-    },
-  ]
+  const { testUsers, testRsvp, testSchedule, testMessages, testComments } = helpers.makeMessagesFixtures()
 
   before(() => {
     db = knex({
@@ -32,11 +14,12 @@ describe(`Schedule service object`, () => {
     })
   })
 
-  before(() => db('schedule').truncate())
 
-  afterEach(() => db('schedule').truncate())
+  before('cleanup', () => helpers.cleanTables(db))
 
-  after(() => db.destroy())
+  afterEach('cleanup', () => helpers.cleanTables(db))
+
+  after('disconnect from db', () => db.destroy())
 
   context(`Given 'schedule' has data`, () => {
     beforeEach(() => {
@@ -45,9 +28,17 @@ describe(`Schedule service object`, () => {
         .insert(testSchedule)
     })
 
+    beforeEach('insert data', () =>
+      helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
+    )
+
     it(`getFullSchedule() resolves all games from 'schedule' table`, () => {
       return ScheduleService.getFullSchedule(db)
         .then(actual => {
+          actual.map(g => ({
+            ...actual,
+            time: new Date(actual.time)
+          }))
           expect(actual).to.eql(testSchedule.map(game => ({
             ...game,
             time: new Date(game.time)
@@ -57,7 +48,6 @@ describe(`Schedule service object`, () => {
 
     it(`getById() resolves a game by id from 'schedule' table`, () => {
       const gameId = 3
-      // const thirdTestGame = testSchedule[gameId - 1]
       return ScheduleService.getById(db, gameId)
         .then(actual => {
           expect(actual).to.eql(testSchedule[gameId - 1])
@@ -88,6 +78,18 @@ describe(`Schedule service object`, () => {
           })
         })
     })
+    it(`getRsvp() resolves game rsvp status from 'rsvp' table`, () => {
+      const gameId = 1
+      const expectedRsvp = testRsvp.filter(gstatus => gstatus.game_id === gameId).map(status =>
+        helpers.makeExpectedRsvp(
+          testUsers,
+          status,
+        ))
+      return ScheduleService.getRsvp(db, gameId)
+        .then(actual => {
+          expect(actual).to.eql(expectedRsvp)
+        })
+    })
 
   })
 
@@ -115,9 +117,5 @@ describe(`Schedule service object`, () => {
           })
         })
     })
-
   })
-
-
-
 })
