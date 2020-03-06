@@ -30,8 +30,6 @@ const RsvpService = {
       .then(rsvp => RsvpService.getRsvpById(db, rsvp.id));
   },
   updateRsvp(db, id, newRsvp) {
-    console.log("id", id);
-    console.log("newRsvp", newRsvp);
     return db
       .from("rsvp")
       .where({ id })

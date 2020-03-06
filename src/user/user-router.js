@@ -9,71 +9,58 @@ const jsonParser = express.json()
 const serializeUser = user => ({
   id: user.id,
   full_name: xss(user.full_name),
-  user_name: xss(user.user_name),  
+  user_name: xss(user.user_name),
   date_created: user.date_created,
 })
 
 userRouter
-  // .route('/')
-  // .get((req, res, next) => {
-  //   const knexInstance = req.app.get('db')
-  //   UserService.getAllUsers(knexInstance)
-  //     .then(users => {
-  //       res.json(users.map(serializeUser))
-  //     })
-  //     .catch(next)
-  // })
   .post('/', jsonParser, (req, res, next) => {
-    const { full_name, user_name,  password } = req.body
+    const { full_name, user_name, password } = req.body
     const newUser = { full_name, user_name, password }
-    console.log('newUser', newUser)
+
     for (const [key, value] of Object.entries(newUser)) {
-      if (value == null) {        
+      if (value == null) {
         return res.status(400).json({
           error: { message: `Missing '${key}' in request body` }
         })
       }
     }
 
-    
     const passwordError = UserService.validatePassword(password)
-    console.log('passwordError', passwordError)
-        if(passwordError)
-          return res.status(400).json({ error: passwordError })
+    if (passwordError)
+      return res.status(400).json({ error: passwordError })
 
-    // newUser.password = password;
     UserService.hasUserWithUserName(
       req.app.get('db'),
       user_name
     )
       .then(hasUserWithName => {
-        console.log('hasUserWithName', hasUserWithName)
-        if(hasUserWithName)
+        if (hasUserWithName)
           return res.status(400).json({ error: 'User name already take' })
-    
+
         return UserService.hashPassword(password)
           .then(hashedPassword => {
             const newUser = {
-              user_name, 
+              user_name,
               password: hashedPassword,
               full_name,
               date_created: 'now()',
             }
 
-          return UserService.insertUser(
-            req.app.get('db'),
-            newUser
-          )
-            .then(user => {
-              res
-                .status(201)
-                .location(path.posix.join(req.originalUrl, `/${user.id}`))
-                .json(serializeUser(user))
-            })
+            return UserService.insertUser(
+              req.app.get('db'),
+              newUser
+            )
+              .then(user => {
+                res
+                  .status(201)
+                  .location(path.posix.join(req.originalUrl, `/${user.id}`))
+                  .json(serializeUser(user))
+              })
           })
           .catch(next)
-      }) 
-      
+      })
+
   })
 
 userRouter

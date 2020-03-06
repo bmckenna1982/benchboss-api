@@ -49,8 +49,7 @@ scheduleRouter
   .get((req, res) => {
     ScheduleService.getById(req.app.get("db"), req.params.gameId).then(
       gameById => {
-        // console.log("gameById", gameById);
-        // console.log("req.user", req.user);
+
         if (!gameById) {
           return res.status(404).send("Game not found");
         }
@@ -66,23 +65,9 @@ scheduleRouter
 scheduleRouter
   .route("/:gameId/rsvp")
   .all(requireAuth)
-  // .get((req, res) => {
-  // ScheduleService.getRsvp(req.app.get('db'), req.params.gameId)
-  //   .then(game => {
-  //     console.log('game', game)
-
-  //     if (!game) {
-  //       return res.status(404).send('Rsvp not found')
-  //     }
-
-  //     res.json(game)
-  //   })
-
-  // })
   .all((req, res, next) => {
     ScheduleService.getRsvp(req.app.get("db"), req.params.gameId)
       .then(allGameRsvp => {
-        // console.log("allGameRsvp", allGameRsvp);
 
         if (!allGameRsvp) {
           return res.status(404).send("Rsvp not found");
@@ -101,13 +86,6 @@ scheduleRouter
       userId
     )
       .then(currentUserRsvp => {
-        // console.log("currentUserRsvp", currentUserRsvp);
-        // if(currentUserRsvp) {
-        //   res.json({  rsvp: {
-        //     game: res.game,
-        //     userRsvp: currentUserRsVP
-        //   }})
-        // }
         res.json({
           teamRsvp: res.allGameRsvp,
           userRsvp: currentUserRsvp

@@ -34,7 +34,7 @@ describe(`Comment service object`, () => {
     )
 
     it(`creates a comment, responding with 201 and the new comment`, function () {
-      // this.retries(3)
+      this.retries(3)
       const testMessage = testMessages[0]
       const testUser = testUsers[0]
       const newComment = {
@@ -45,7 +45,6 @@ describe(`Comment service object`, () => {
       return supertest(app)
         .post('/api/comments')
         .set('Authorization', helpers.makeAuthHeader(testUser))
-        // .set('Authorization', process.env.API_TOKEN)
         .send(newComment)
         .expect(201)
         .expect(res => {
@@ -54,7 +53,6 @@ describe(`Comment service object`, () => {
           expect(res.body.message_id).to.eql(newComment.message_id)
           const expected_date = new Date().toLocaleString('en', { timeZone: 'UTC' })
           const actual_date = new Date(res.body.posted_date).toLocaleString()
-          console.log('actual_date', res.body.posted_date)
           expect(actual_date).to.eql(expected_date)
           expect(res.body.author).to.eql({
             id: testUser.id,
@@ -64,8 +62,7 @@ describe(`Comment service object`, () => {
           expect(res.headers.location).to.eql(`/api/comments/${res.body.id}`)
 
         })
-      // .expect(res => 
-      //   db)
+
     })
 
   })

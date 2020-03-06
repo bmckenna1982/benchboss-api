@@ -15,11 +15,9 @@ rsvpRouter.post("/", requireAuth, bodyParser, (req, res, next) => {
         error: `Missing '${key}' in request body`
       });
 
-  //check database to see if user has already RSVP
-  // console.log("req.user.id", req.user.id);
+
   newRsvp.user_id = req.user.id;
 
-  // res.json(req.user.id)
   RsvpService.insertRsvp(req.app.get("db"), newRsvp)
     .then(rsvp => {
       res
@@ -36,7 +34,6 @@ rsvpRouter
   .get((req, res, next) => {
     RsvpService.getRsvpById(req.app.get("db"), req.params.rsvp_id)
       .then(rsvp => {
-        // console.log("rsvp", rsvp);
         res.json(rsvp);
       })
       .catch(next);
@@ -44,12 +41,7 @@ rsvpRouter
   .patch(bodyParser, (req, res, next) => {
     const { game_status } = req.body;
     const rsvpToUpdate = { game_status };
-    //add new date for response_date to db
-    // rsvpToUpdate = {
-    //   ...game_status,
-    //   response_date: new Date(now)
-    // };
-    // console.log("req.params.rsvp_id", req.params.rsvp_id);
+
     if (!game_status) {
       return res
         .status(400)
@@ -58,8 +50,6 @@ rsvpRouter
 
     RsvpService.updateRsvp(req.app.get("db"), req.params.rsvp_id, rsvpToUpdate)
       .then(numRowsAffected => {
-        console.log("numRowsAffected", numRowsAffected);
-        // res.status(204).end();
         res.status(202).json({ numRowsAffected });
       })
       .catch(next);

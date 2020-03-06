@@ -1,3 +1,5 @@
+TRUNCATE schedule RESTART IDENTITY CASCADE;
+
 INSERT INTO schedule (summary, location, time)
   VALUES
     ('Gremlins at Guinness', 'The Cooler (Red)', '20191208T203000Z'),

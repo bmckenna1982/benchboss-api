@@ -22,7 +22,7 @@ messageRouter
     const { title, content } = req.body;
     const author_id = req.user.id;
     const newMessage = { title, content, author_id };
-    // console.log('req.body', req.body)
+
     if (!title) {
       return res.status(400).send("Invalid data");
     }

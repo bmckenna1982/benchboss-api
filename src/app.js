@@ -26,26 +26,14 @@ app.use(express.json())
 app.use(helmet())
 app.use(cors())
 
-// app.use(function validateBearerToken(req, res, next) {
-//   const apiToken = process.env.API_TOKEN || 'nothing'
-//   const authToken = req.get('Authorization')
-
-//   console.log('Test', apiToken)
-//   if (!authToken || authToken.split(' ')[1] !== apiToken) {    
-//     return res.status(401).json({ error: 'Unauthorized request' })
-//   }
-//   // move to the next middleware
-//   next()
+// app.get('/', (req, res) => {
+//   // res.send('Hello, world!')
+//   res.json({ ok: true })
 // })
-
-app.get('/', (req, res) => {
-  // res.send('Hello, world!')
-  res.json({ ok: true })
-})
 
 app.get('/api/latest-message', (req, res) => {
   MessageService.getLatest(req.app.get('db'))
-    .then(message => {      
+    .then(message => {
       if (!message) {
         return res.status(404).send('Latest message not found')
       }

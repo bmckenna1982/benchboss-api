@@ -45,7 +45,6 @@ describe(`Rsvp Endpoints`, function () {
         .send(newRsvp)
         .expect(201)
         .expect(res => {
-          console.log('res.body', res.body)
           expect(res.body).to.have.property('id')
           expect(res.body.game_status).to.eql(newRsvp.game_status)
           expect(res.body.game_id).to.eql(newRsvp.game_id)
@@ -74,11 +73,6 @@ describe(`Rsvp Endpoints`, function () {
         const updateRsvp = {
           game_status: 'maybe'
         }
-
-        // const expectedRsvp = {
-        //   ...testRsvp[idToUpdate - 1],
-        //   ...updateRsvp
-        // }
 
         const expectedRsvp =
           helpers.makeExpectedRsvp(

@@ -6,8 +6,6 @@ const { requireAuth } = require("../middleware/jwt-auth");
 const commentRouter = express.Router();
 const bodyParser = express.json();
 
-// const comments = require('../comment-data')
-
 commentRouter
   .route("/")
   .get((req, res, next) => {
@@ -18,27 +16,18 @@ commentRouter
           res.json(comments);
         })
         .catch(next)
-      // const { messageId } = req.params;
-      // console.log('messageId', messageId)
-      // const commentsArray = comments.filter(c => c.messageId == messageId)
-      // console.log('commentsArray', commentsArray)
-      // res.json(commentsArray)
     );
   })
   .post(requireAuth, bodyParser, (req, res, next) => {
     const { content, message_id } = req.body;
     const author_id = req.user.id;
     const newComment = { content, message_id, author_id };
-    console.log("req.body", req.body);
-    console.log("newComment", newComment);
 
     for (const [key, value] of Object.entries(newComment))
       if (value == null)
         return res.status(400).json({
           error: { message: `Missing '${key}' in request body` }
         });
-
-    // newComment.posted_date = posted_date
 
     CommentService.insertComment(req.app.get("db"), newComment)
       .then(comment => {
@@ -49,29 +38,6 @@ commentRouter
       })
       .catch(next);
 
-    // if (!content) {
-    //   return res.status(400).send('Invalid data')
-    // }
-
-    // const id = uuid()
-    // const postedDate = new Date();
-    // const author = "api author"
-    // console.log('postedDate', postedDate)
-
-    // const comment = {
-    //   id,
-    //   content,
-    //   author,
-    //   postedDate,
-    //   messageId,
-    // }
-
-    // comments.push(comment)
-
-    // res
-    //   .status(201)
-    //   .location(`https://localhost:8000/message-board/${messageId}/comments/${id}`)
-    //   .json(comment)
   });
 
 commentRouter
@@ -98,17 +64,6 @@ commentRouter
         res.status(204).end();
       })
       .catch(next);
-    // const { commentId } = req.params
-    // const index = comments.findIndex(c => c.id === commentId)
-
-    // if (index === -1) {
-    //   return res.status(404).send('Comment not found')
-    // }
-
-    // comments.splice(index, 1)
-
-    // logger.info(`Comment with id ${commentId} deleted.`);
-    // res.send('Deleted')
   })
   .patch((req, res, next) => {
     const { content, posted_date } = req.body;

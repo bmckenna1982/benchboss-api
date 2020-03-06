@@ -39,7 +39,6 @@ describe.only(`Schedule service object`, () => {
             ...actual,
             time: new Date(actual.time)
           }))
-          console.log('actual', actual)
           expect(actual).to.eql(testSchedule.map(game => ({
             ...game,
             time: new Date(game.time)
@@ -49,7 +48,6 @@ describe.only(`Schedule service object`, () => {
 
     it(`getById() resolves a game by id from 'schedule' table`, () => {
       const gameId = 3
-      // const thirdTestGame = testSchedule[gameId - 1]
       return ScheduleService.getById(db, gameId)
         .then(actual => {
           expect(actual).to.eql(testSchedule[gameId - 1])
@@ -81,17 +79,6 @@ describe.only(`Schedule service object`, () => {
         })
     })
     it(`getRsvp() resolves game rsvp status from 'rsvp' table`, () => {
-      // before(() => {
-      //   helpers.seedUsers(
-      //     db,
-      //     testUsers
-      //   )
-      // })
-
-      // beforeEach('insert data', () =>
-      //   helpers.seedTables(db, testUsers, testMessages, testComments, testRsvp)
-      // )
-
       const gameId = 1
       const expectedRsvp = testRsvp.filter(gstatus => gstatus.game_id === gameId).map(status =>
         helpers.makeExpectedRsvp(
@@ -130,9 +117,5 @@ describe.only(`Schedule service object`, () => {
           })
         })
     })
-
   })
-
-
-
 })
