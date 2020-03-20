@@ -17,7 +17,7 @@ Start nodemon for the application `npm run dev`
 
 Run the tests `npm test`
 
-## Open Endpoints
+## Endpoints
 
 |Path       |Method    |Protected |
 |:-------------|:---------|:---------|
