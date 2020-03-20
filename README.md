@@ -40,34 +40,3 @@ Run the tests `npm test`
 |/api/users/:userId|GET |Yes |
 | |DELETE |Yes |
 | |PATCH |Yes |
-
-Authentication
-  * POST /api/login
-  
-Schedule
-  * GET /api/schedule
-  * POST /api/schedule
-  * GET /api/schedule/:gameId
-  * GET /api/schedule/:gameId/rsvp
-
-Messages
-  * GET /api/message-board
-  * POST /api/message-board
-  * GET /api/message-board/:messageId
-  * DELETE /api/message-board/:messageId
-
-Latest Message
-  * GET /api/latest-message
-
-Comments
-  * GET /api/comments
-  * POST /api/comments
-  * GET /api/comments/:commentId
-  * DELETE /api/comments/:commentId
-  * PATCH /api/comments/:commentId
-  
-Users  
-  * POST /api/users
-  * GET /api/users/:userId
-  * DELETE /api/users/:userId
-  * PATCH /api/users/:userId
