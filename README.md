@@ -26,6 +26,7 @@ Run the tests `npm test`
 | |POST |Yes |
 | |GET |Yes |
 | |GET |Yes |
+|/api/message-board |GET |Yes|
 
 Authentication
   * POST /api/login
