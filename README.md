@@ -26,7 +26,16 @@ Run the tests `npm test`
 | |POST |Yes |
 | |GET |Yes |
 | |GET |Yes |
-|/api/message-board |GET |Yes|
+|/api/message-board |GET |Yes |
+| |POST |Yes |
+|/api/message-board/:messageId |GET |Yes |
+| |DELETE |Yes |
+|/api/latest-message |GET |No |
+|/api/comments |GET |Yes |
+| |POST |Yes |
+|/api/comments/:commentId|GET |Yes |
+| |DELETE |Yes |
+| |PATCH |Yes |
 
 Authentication
   * POST /api/login
