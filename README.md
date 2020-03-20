@@ -21,19 +21,23 @@ Run the tests `npm test`
 
 |Path       |Method    |Protected |
 |:-------------|:---------|:---------|
-|/api/login |POST      |No        |
-|/api/schedule |GET |No |
+|/api/login |POST      |        |
+|/api/schedule |GET | |
 | |POST |Yes |
-| |GET |Yes |
-| |GET |Yes |
+|/api/schedule/:gameId |GET |Yes |
+|/api/schedule/:gameId/rsvp |GET |Yes |
 |/api/message-board |GET |Yes |
 | |POST |Yes |
 |/api/message-board/:messageId |GET |Yes |
 | |DELETE |Yes |
-|/api/latest-message |GET |No |
+|/api/latest-message |GET | |
 |/api/comments |GET |Yes |
 | |POST |Yes |
 |/api/comments/:commentId|GET |Yes |
+| |DELETE |Yes |
+| |PATCH |Yes |
+|/api/users |POST | |
+|/api/users/:userId|GET |Yes |
 | |DELETE |Yes |
 | |PATCH |Yes |
 
