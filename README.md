@@ -23,6 +23,9 @@ Run the tests `npm test`
 |:-------------|:---------|:---------|
 |/api/login |POST      |No        |
 |/api/schedule |GET |No |
+| |POST |Yes |
+| |GET |Yes |
+| |GET |Yes |
 
 Authentication
   * POST /api/login
