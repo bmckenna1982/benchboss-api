@@ -19,6 +19,10 @@ Run the tests `npm test`
 
 ## Open Endpoints
 
+|Path       |Method    |Protected |
+|-----------|:--------:|---------:|
+|/api/login |POST      |No        |
+
 Authentication
   * POST /api/login
   
