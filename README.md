@@ -4,7 +4,7 @@ This is the REST API server for Bench Boss.
 
 ## Set up
 
-1. Clone this repository to your local machine `git clone https://github.com/bmckenna1982/benchboss-api.git NEW-PROJECTS-NAME 
+1. Clone this repository to your local machine `git clone https://github.com/bmckenna1982/benchboss-api.git NEW-PROJECTS-NAME` 
 2. `cd` into the cloned repository
 3. Install the node dependencies `npm install`
 4. Move the example Environment file to .env  `mv example.env .env`
