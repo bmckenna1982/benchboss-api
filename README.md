@@ -1,6 +1,6 @@
 # Bench Boss API server
 
-This is the REST API server for Bench Boss. 
+This is the REST API server for Bench Boss. It supports both open and protected endpoints and is built around PostgreSQL database.
 
 ## Set up
 
