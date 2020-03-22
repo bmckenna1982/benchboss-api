@@ -17,6 +17,12 @@ Start nodemon for the application `npm run dev`
 
 Run the tests `npm test`
 
+## Technologies
+
+* Node
+* Express
+* PostgreSQL
+
 ## Endpoints
 
 |Path       |Method    |Protected |
