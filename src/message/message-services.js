@@ -65,7 +65,7 @@ const MessageService = {
       .first();
   },
 
-  getLatestComment(db, messageId) {
+  getLatestMessageComment(db, messageId) {
     return db
       .from("comment AS comm")
       .select(

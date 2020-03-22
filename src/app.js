@@ -7,6 +7,7 @@ const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 
 const MessageService = require('./message/message-services')
+const CommentService = require('./comment/comment-services')
 
 const scheduleRouter = require('./schedule/schedule-router')
 const messageRouter = require('./message/message-router')
@@ -31,6 +32,17 @@ app.use(cors())
 //   res.json({ ok: true })
 // })
 
+app.get('/api/latest-comment', (req, res) => {
+  CommentService.getLatestComment(req.app.get('db'))
+    .then(comment => {
+      if (!comment) {
+        return res.status(404).send('Latest comment not found')
+      }
+      console.log('comment', comment)
+      res.json(comment)
+    })
+})
+
 app.get('/api/latest-message', (req, res) => {
   MessageService.getLatest(req.app.get('db'))
     .then(message => {
@@ -39,8 +51,9 @@ app.get('/api/latest-message', (req, res) => {
       }
       res.json(message)
     })
-
 })
+
+
 
 app.use('/api/schedule', scheduleRouter)
 app.use('/api/message-board', messageRouter)

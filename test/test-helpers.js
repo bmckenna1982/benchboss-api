@@ -178,7 +178,7 @@ function makeRsvpArray(users) {
       user_id: 3,
       game_status: 'out',
       response_date: new Date('2020-02-06T20:00:00.000Z')
-    },    
+    },
   ]
 }
 
@@ -230,13 +230,10 @@ function makeExpectedMessageComments(users, messageId, comments) {
       id: comment.id,
       content: comment.content,
       posted_date: comment.posted_date.toISOString(),
-      // message_id: comment.message_id,
       author: {
         id: commentUser.id,
         user_name: commentUser.user_name,
         full_name: commentUser.full_name,
-        // date_created: commentUser.date_created.toISOString(),
-        // date_modified: commentUser.date_modified || null,
       }
     }
   })
@@ -295,18 +292,7 @@ function seedUsers(db, users) {
 }
 
 function seedTables(db, users, messages, comments = [], rsvp = []) {
-  // return db
-  //   .into('benchboss_user')
-  //   .insert(users)
-  //   .then(() =>
-  //     db
-  //       .into('message')
-  //       .insert(messages)
-  //   )
-  //   .then(() =>
-  //     comments.length && db.into('comment').insert(comments)
-  //   )
-  
+
   return db.transaction(async trx => {
     await seedUsers(trx, users)
     await trx.into('message').insert(messages)
@@ -314,7 +300,7 @@ function seedTables(db, users, messages, comments = [], rsvp = []) {
       `SELECT setval('message_id_seq', ?)`,
       [messages[messages.length - 1].id],
     )
-    
+
     if (comments.length) {
       await trx.into('comment').insert(comments)
       await trx.raw(
@@ -322,7 +308,7 @@ function seedTables(db, users, messages, comments = [], rsvp = []) {
         [comments[comments.length - 1].id],
       )
     }
-    
+
     if (rsvp.length) {
       await trx.into('rsvp').insert(rsvp)
       await trx.raw(

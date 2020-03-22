@@ -44,14 +44,15 @@ messageRouter
   .route("/:messageId")
   .all(requireAuth)
   .get((req, res) => {
-    MessageService.getById(req.app.get("db"), req.params.messageId).then(
-      message => {
-        if (!message) {
-          return res.status(404).send("Message not found");
+    MessageService.getById(req.app.get("db"), req.params.messageId)
+      .then(
+        message => {
+          if (!message) {
+            return res.status(404).send("Message not found");
+          }
+          res.json(message);
         }
-        res.json(message);
-      }
-    );
+      );
   })
   .delete((req, res) => {
     const { messageId } = req.params;
@@ -73,7 +74,7 @@ messageRouter.route("/:messageId/comments").get((req, res, next) => {
 });
 
 messageRouter.route("/:messageId/latest-comment").get((req, res, next) => {
-  MessageService.getLatestComment(req.app.get("db"), req.params.messageId)
+  MessageService.getLatestMessageComment(req.app.get("db"), req.params.messageId)
     .then(comment => res.json(comment))
     .catch(next);
 });

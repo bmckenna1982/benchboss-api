@@ -40,6 +40,17 @@ commentRouter
 
   });
 
+// commentRouter
+//   .route("/latest")
+//   .get((req, res) => {
+//     CommentService.getLatestComment(req.app.get('db'))
+//       .then(comment => {
+//         console.log('comments', comment)
+//         res.json(comment)
+//       })
+//       .catch(next)
+//   })
+
 commentRouter
   .route("/:comment_id")
   .all((req, res, next) => {

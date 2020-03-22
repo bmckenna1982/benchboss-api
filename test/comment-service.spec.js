@@ -23,12 +23,6 @@ describe(`Comment service object`, () => {
   after(() => db.destroy())
 
   describe(`POST /api/comments`, () => {
-    // beforeEach(() => {
-    //   return db
-    //     .into('comment')
-    //     .insert(testComments)
-    // })
-
     beforeEach('insert data', () =>
       helpers.seedTables(db, testUsers, testMessages, testComments)
     )
